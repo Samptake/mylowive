@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днём Рождения ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Матрица на фоне */
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* Основной контент */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Заголовок */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ff006e, 0 0 20px #ff006e; }
+            to { text-shadow: 0 0 20px #ff006e, 0 0 30px #ff006e, 0 0 40px #ff006e; }
+        }
+        
+        h1 {
+            font-size: 3rem;
+            color: #ff006e;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #00ff00;
+        }
+        
+        /* Таймер */
+        .timer-box {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .timer-label {
+            font-size: 1.5rem;
+            color: #00ff00;
+            margin-bottom: 15px;
+        }
+        
+        .timer {
+            font-size: 2.5rem;
+            color: #ff006e;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff006e;
+        }
+        
+        /* Статистика */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 0, 110, 0.1);
+            border: 2px solid #ff006e;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            color: #ff006e;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff006e;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+        
+        /* Терминал с кодом */
+        .terminal {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        .terminal-header {
+            color: #00ff00;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .code-line {
+            color: #00ff00;
+            margin: 8px 0;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .code-line:nth-child(2) { animation-delay: 0.5s; }
+        .code-line:nth-child(3) { animation-delay: 1s; }
+        .code-line:nth-child(4) { animation-delay: 1.5s; }
+        .code-line:nth-child(5) { animation-delay: 2s; }
+        .code-line:nth-child(6) { animation-delay: 2.5s; }
+        
+        .keyword { color: #ff006e; }
+        .string { color: #00ffff; }
+        .comment { color: #888; }
+        
+        /* Сообщение */
+        .message {
+            background: rgba(0, 255, 0, 0.05);
+            border-left: 4px solid #ff006e;
+            padding: 25px;
+            margin: 30px 0;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #00ff00;
+        }
+        
+        .message p {
+            margin: 15px 0;
+        }
+        
+        /* Клик-эффект */
+        .click-heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2rem;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0); opacity: 0; }
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .timer { font-size: 1.8rem; }
+            .stat-value { font-size: 2.2rem; }
+            .message { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+    
+    <div class="container">
+        <div class="header">
+            <h1>С Днём Рождения ❤️</h1>
+            <div class="subtitle">> init love.exe...</div>
+        </div>
+        
+        <div class="timer-box">
+            <div class="timer-label">> countdown_to_meeting:</div>
+            <div class="timer" id="countdown">Загрузка...</div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="days-together">0</div>
+                <div class="stat-label">дней вместе</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1200</div>
+                <div class="stat-label">км между нами</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="love-level">∞</div>
+                <div class="stat-label">уровень любви</div>
+            </div>
+        </div>
+        
+        <div class="terminal">
+            <div class="terminal-header">$ cat love_algorithm.py</div>
+            <div class="code-line"><span class="keyword">while</span> True:</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="string">"ты"</span> <span class="keyword">in</span> my_life:</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;happiness = <span class="string">"maximum"</span></div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;love += <span class="string">1</span> <span class="comment"># бесконечно</span></div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>:</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span> <span class="comment"># никогда не случится</span></div>
+        </div>
+        
+        <div class="message">
+            <p>> Ты — мой самый красивый баг, который я никогда не исправлю.</p>
+            <p>> Каждый день я мечтаю обнять тебя и сказать:</p>
+            <p>> <span style="color: #ff006e;">"Я люблю тебя больше, чем звёзды неба"</span></p>
+            <p>> 4 августа 2026 — день, когда я наконец-то смогу это сделать.</p>
+            <p>> С днём рождения, моя солнечная лучик! 🌞</p>
+        </div>
+    </div>
+
+    <script>
+        // Матрица на фоне
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = '❤️💕💖💗💘💝01';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#ff006e';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 50);
+        
+        // Таймер
+        const startDate = new Date(2025, 9, 9);
+        const meetDate = new Date(2026, 7, 4);
+        
+        function updateTimer() {
+            const now = new Date();
+            const diffMeet = meetDate - now;
+            
+            if (diffMeet > 0) {
+                const days = Math.floor(diffMeet / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diffMeet % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMeet % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMeet % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown').textContent = 
+                    `${days}д ${hours}ч ${minutes}м ${seconds}с`;
+            } else {
+                document.getElementById('countdown').textContent = "🎉 МЫ ВМЕСТЕ!";
+            }
+            
+            const diffStart = now - startDate;
+            const daysTogether = Math.floor(diffStart / (1000 * 60 * 60 * 24));
+            
+            // Анимация чисел
+            animateValue('days-together', 0, daysTogether, 2000);
+        }
+        
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            stepTime = Math.max(stepTime, minTimer);
+            let startTime = new Date().getTime();
+            let endTime = startTime + duration;
+            let timer;
+            
+            function run() {
+                let now = new Date().getTime();
+                let remaining = Math.max((endTime - now) / duration, 0);
+                let value = Math.round(end - (remaining * range));
+                obj.innerHTML = value;
+                if (value == end) {
+                    clearInterval(timer);
+                }
+            }
+            
+            timer = setInterval(run, stepTime);
+            run();
+        }
+        
+        // Клик-эффект с сердечками
+        document.addEventListener('click', function(e) {
+            const heart = document.createElement('div');
+            heart.className = 'click-heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = e.clientX + 'px';
+            heart.style.top = e.clientY + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 1000);
+        });
+        
+        // Запуск
+        window.onload = function() {
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        };
+        
+        // Ресайз канваса
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
